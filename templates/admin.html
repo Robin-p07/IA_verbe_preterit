@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Smart Verbs</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        const savedTheme = localStorage.getItem('smartVerbsTheme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+    <style>
+        .admin-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+        }
+        th { font-weight: 600; opacity: 0.8; }
+        .edit-input { width: 100%; padding: 0.5rem; font-size: 0.9rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-color); }
+        .action-btns { display: flex; gap: 0.5rem; }
+        .btn-small { padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 8px; cursor: pointer; }
+        .btn-danger { background-color: var(--error); color: white; border:none; }
+        .btn-danger:hover { background-color: #dc2626; }
+        
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            align-items: center; justify-content: center; z-index: 100;
+        }
+        .modal.open { display: flex; }
+        .modal-content {
+            background: var(--card-bg); padding: 2rem; border-radius: 16px;
+            width: 90%; max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <header style="max-width: 1000px; margin: 0 auto; padding-top: 1rem;">
+        <h1>⚙️ Panel Admin</h1>
+        <div class="header-actions">
+            <a href="/" class="btn btn-secondary btn-small" style="text-decoration: none;">Retour au Quiz</a>
+            <a href="/admin/users" class="btn btn-secondary btn-small" style="text-decoration: none;">Gérer les Utilisateurs</a>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <h2>Gestion des verbes irréguliers</h2>
+        
+        <form id="add-verb-form" style="display:flex; gap:1rem; flex-wrap: wrap; margin-top: 1rem; align-items: end;">
+            <div><label style="font-size: 0.8rem; opacity: 0.7;">Français*</label><input type="text" id="add-fr" required class="edit-input"></div>
+            <div><label style="font-size: 0.8rem; opacity: 0.7;">Base*</label><input type="text" id="add-base" required class="edit-input"></div>
+            <div><label style="font-size: 0.8rem; opacity: 0.7;">Prétérit*</label><input type="text" id="add-past" required class="edit-input"></div>
+            <div><label style="font-size: 0.8rem; opacity: 0.7;">Participe*</label><input type="text" id="add-participle" required class="edit-input"></div>
+            <div><label style="font-size: 0.8rem; opacity: 0.7;">Prétérit (alt)</label><input type="text" id="add-past-alt" class="edit-input"></div>
+            <div><label style="font-size: 0.8rem; opacity: 0.7;">Participe (alt)</label><input type="text" id="add-participle-alt" class="edit-input"></div>
+            <button type="submit" class="btn btn-small">Ajouter</button>
+        </form>
+
+        <div style="margin-top: 2rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">Liste des verbes <span id="total-verbs-count" style="font-size: 0.9rem; font-weight: normal; opacity: 0.8;"></span></h3>
+            <input type="text" id="search-verb" class="edit-input" placeholder="🔍 Rechercher un verbe..." style="max-width: 300px;">
+        </div>
+
+        <table id="verbs-table" style="margin-top: 0;">
+            <thead>
+                <tr>
+                    <th>FR</th>
+                    <th>Base</th>
+                    <th>Past</th>
+                    <th>Participle</th>
+                    <th>Past(Alt)</th>
+                    <th>Part(Alt)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Injected via JS -->
+            </tbody>
+        </table>
+    </main>
+
+    <script src="/static/admin.js"></script>
+</body>
+</html>

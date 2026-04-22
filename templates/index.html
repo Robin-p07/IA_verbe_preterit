@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irregular Verbs IA</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        const savedTheme = localStorage.getItem('smartVerbsTheme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        window.APP_DATA = {
+            username: "{{ username }}",
+            isAdmin: {{ 'true' if is_admin else 'false' }},
+            statsJson: {{ stats_json | safe }}
+        };
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Irregular Verbs IA</h1>
+        <div class="header-actions">
+            <span id="user-display"
+                style="align-self: center; margin-right: 1rem; font-weight: 600;">👤 {{ username }}</span>
+            
+            {% if is_admin %}
+            <a href="/admin" id="admin-btn" class="btn btn-secondary btn-small"
+                style="text-decoration: none; padding: 0.5rem 1rem; font-size: 0.9rem;">Admin</a>
+            {% endif %}
+            
+            <button id="change-pwd-btn" class="icon-btn" title="Changer de mot de passe">🔑</button>
+            <button id="logout-btn" class="icon-btn" title="Se déconnecter">🚪</button>
+            <button id="theme-toggle" class="icon-btn theme-toggle" aria-label="Basculer le thème">🌙</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- SETUP VIEW -->
+        <div id="setup-view" style="display: none;">
+            <div class="verb-display">
+                <h2>Nouvelle Session</h2>
+                <p>Combien de verbes voulez-vous réviser ?</p>
+            </div>
+            <form id="setup-form">
+                <div class="form-group" style="align-items: center; text-align: center;">
+                    <div class="input-wrapper" style="max-width: 200px; margin: 0 auto;">
+                        <input type="number" id="session-count" placeholder=" " min="1" max="500">
+                        <label for="session-count">Nb. verbes <span id="max-verbs-display"></span></label>
+                    </div>
+                </div>
+                <div class="actions" style="margin-top: 2rem;">
+                    <button type="submit" id="start-custom-btn" class="btn">Démarrer</button>
+                    <button type="button" id="start-all-btn" class="btn btn-secondary">Tous les verbes</button>
+                </div>
+            </form>
+            
+            <div id="resume-container" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--card-border);">
+                <h3>Session en attente</h3>
+                <p id="resume-info" style="margin-bottom: 1rem; opacity: 0.8;"></p>
+                <div class="actions">
+                    <button type="button" id="resume-btn" class="btn">Reprendre la session</button>
+                    <button type="button" id="discard-btn" class="btn btn-secondary">Abandonner</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ VIEW -->
+        <div id="quiz-view" style="display: none;">
+            <div class="stats-bar">
+                <span id="progress-display">Session: 0 / 0</span>
+                <span id="session-accuracy-display">📈 Réussite: 0%</span>
+            </div>
+
+            <div class="verb-display">
+                <p>Traduisez ce verbe</p>
+                <div id="current-verb-fr" class="verb-fr">...</div>
+            </div>
+
+            <form id="quiz-form">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="input-base" placeholder=" " autocomplete="off" autocorrect="off"
+                            spellcheck="false">
+                        <label for="input-base">Base verbale</label>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" id="input-past" placeholder=" " autocomplete="off" autocorrect="off"
+                            spellcheck="false">
+                        <label for="input-past">Prétérit</label>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" id="input-participle" placeholder=" " autocomplete="off" autocorrect="off"
+                            spellcheck="false">
+                        <label for="input-participle">Participe passé</label>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn">Vérifier</button>
+            </form>
+
+            <div id="feedback-msg" class="feedback"></div>
+
+            <div class="actions">
+                <button id="next-btn" class="btn" style="display: none;">Verbe suivant ➔</button>
+                <button type="button" id="quit-btn" class="btn btn-secondary">Quitter la session</button>
+            </div>
+        </div>
+
+        <!-- RESULT VIEW -->
+        <div id="result-view" style="display: none;">
+            <div class="verb-display">
+                <h2>Fin de la session ! 🎉</h2>
+                <p id="final-score" style="font-size: 1.5rem; font-weight: bold; margin-top: 1rem;"></p>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; opacity: 0.8;">Historique de la session</h3>
+            <div id="history-list" class="history-list">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="actions" style="margin-top: 2rem;">
+                <button id="retry-btn" class="btn" style="display: none;">Améliorer mon score</button>
+                <button id="restart-btn" class="btn btn-secondary">Nouvelle session</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Password Change Modal -->
+    <div id="pwd-modal" class="modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 100;">
+        <div class="modal-content"
+            style="background: var(--card-bg); padding: 2rem; border-radius: 16px; width: 90%; max-width: 400px; border: 1px solid var(--card-border); box-shadow: var(--shadow);">
+            <h3>Changer mon mot de passe</h3>
+            <form id="pwd-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1rem;">
+                <input type="password" id="new-pwd" placeholder="Nouveau mot de passe" required
+                    style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-color);">
+                <button type="submit" class="btn">Valider</button>
+                <button type="button" id="close-pwd-btn" class="btn btn-secondary">Annuler</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

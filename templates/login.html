@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Smart Verbs IA</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        const savedTheme = localStorage.getItem('smartVerbsTheme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Smart Verbs IA</h1>
+        <div class="header-actions">
+            <button id="theme-toggle" class="icon-btn theme-toggle" aria-label="Basculer le thème">🌙</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="auth-view">
+            <div class="verb-display">
+                <h2>Connexion / Inscription</h2>
+                <p>Connectez-vous pour sauvegarder votre score en ligne</p>
+            </div>
+            <form id="auth-form">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="auth-username" placeholder=" " required autocomplete="username">
+                        <label for="auth-username">Nom d'utilisateur</label>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="password" id="auth-password" placeholder=" " required autocomplete="current-password">
+                        <label for="auth-password">Mot de passe</label>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button type="submit" id="login-btn" class="btn">Se connecter</button>
+                    <button type="button" id="register-btn" class="btn btn-secondary">Créer un compte</button>
+                </div>
+                <div id="auth-error" class="feedback show incorrect" style="display: none; margin-top: 1rem;"></div>
+            </form>
+        </div>
+    </main>
+
+    <script src="/static/login.js"></script>
+</body>
+</html>
