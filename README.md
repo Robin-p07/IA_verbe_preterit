@@ -1,1 +1,0 @@
-# IA_verbe_preterit
