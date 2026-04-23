@@ -44,7 +44,7 @@ def init_db():
             # 1. Create root user if not exists
             cursor.execute("SELECT id FROM users WHERE username = 'root'")
             if not cursor.fetchone():
-                hashed_pw = generate_password_hash('Sarah24z')
+                hashed_pw = generate_password_hash('1234')
                 cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)", ('root', hashed_pw))
                 print("Root user created.")
             
