@@ -11,10 +11,11 @@ app.secret_key = os.urandom(24)
 
 def get_db_connection():
     return pymysql.connect(
-        host='localhost',
-        user='root',
-        password='secret',
-        database='smartverbs_db',
+        host=os.getenv('MYSQLHOST'),
+        port=int(os.getenv('MYSQLPORT', 3306)),
+        user=os.getenv('MYSQLUSER'),
+        password=os.getenv('MYSQLPASSWORD'),
+        database=os.getenv('MYSQLDATABASE'),
         cursorclass=pymysql.cursors.DictCursor
     )
 
